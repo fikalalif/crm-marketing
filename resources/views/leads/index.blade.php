@@ -3,32 +3,59 @@
 @section('header_title', 'Kelola Leads')
 
 @section('content')
-    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div class="flex gap-2">
-            <!-- Filter Status Placeholder -->
-            <button class="px-3 py-1 text-sm font-semibold bg-white border-2 border-black hover:bg-slate-100">Semua</button>
-            <button
-                class="px-3 py-1 text-sm font-semibold bg-[#93c5fd] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Cool</button>
-            <button
-                class="px-3 py-1 text-sm font-semibold bg-[#fde047] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Warm</button>
-            <button
-                class="px-3 py-1 text-sm font-semibold bg-[#fca5a5] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Hot</button>
-            <button
-                class="px-3 py-1 text-sm font-semibold bg-[#86efac] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Close</button>
+    <!-- Area Search & Filter -->
+    <form action="{{ route('leads.index') }}" method="GET"
+        class="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-white p-4 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-sm">
+
+        <!-- Filter Status -->
+        <div class="flex flex-wrap gap-2">
+            <button type="submit" name="status" value=""
+                class="px-3 py-1 text-sm font-semibold border-2 border-black transition-all {{ request('status') == '' ? 'bg-slate-800 text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-black hover:bg-slate-100' }}">Semua</button>
+            <button type="submit" name="status" value="cool"
+                class="px-3 py-1 text-sm font-semibold border-2 border-black transition-all {{ request('status') == 'cool' ? 'bg-[#93c5fd] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-slate-100' }}">Cool</button>
+            <button type="submit" name="status" value="warm"
+                class="px-3 py-1 text-sm font-semibold border-2 border-black transition-all {{ request('status') == 'warm' ? 'bg-[#fde047] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-slate-100' }}">Warm</button>
+            <button type="submit" name="status" value="hot"
+                class="px-3 py-1 text-sm font-semibold border-2 border-black transition-all {{ request('status') == 'hot' ? 'bg-[#fca5a5] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-slate-100' }}">Hot</button>
+            <button type="submit" name="status" value="close"
+                class="px-3 py-1 text-sm font-semibold border-2 border-black transition-all {{ request('status') == 'close' ? 'bg-[#86efac] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white hover:bg-slate-100' }}">Close</button>
         </div>
 
-        <div class="flex gap-2">
-            <button
-                class="px-4 py-2 font-bold bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all">
-                Export PDF
+        <!-- Search, Date, Source, and Action -->
+        <div class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
+            <!-- Input Search -->
+            <input type="text" name="search" value="{{ request('search') }}"
+                placeholder="Cari nama, email, perusahaan..."
+                class="p-2 text-sm border-2 border-black focus:outline-none focus:bg-slate-50 flex-1 min-w-[200px]">
+
+            <!-- Input Date -->
+            <input type="date" name="date" value="{{ request('date') }}"
+                class="p-2 text-sm border-2 border-black focus:outline-none focus:bg-slate-50 bg-white">
+
+            <!-- Select Source -->
+            <select name="source" class="p-2 text-sm border-2 border-black focus:outline-none focus:bg-slate-50 bg-white">
+                <option value="">Semua Source</option>
+                <option value="Google Ads" {{ request('source') == 'Google Ads' ? 'selected' : '' }}>Google Ads</option>
+                <option value="Meta Ads" {{ request('source') == 'Meta Ads' ? 'selected' : '' }}>Meta Ads</option>
+                <option value="Website" {{ request('source') == 'Website' ? 'selected' : '' }}>Website</option>
+                <option value="WhatsApp" {{ request('source') == 'WhatsApp' ? 'selected' : '' }}>WhatsApp</option>
+                <option value="Referral" {{ request('source') == 'Referral' ? 'selected' : '' }}>Referral</option>
+                <option value="Organic" {{ request('source') == 'Organic' ? 'selected' : '' }}>Organic</option>
+            </select>
+
+            <!-- Tombol Terapkan Filter -->
+            <button type="submit"
+                class="px-4 py-2 text-sm font-bold bg-slate-800 text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-none transition-all">
+                Cari
             </button>
-            <!-- Ubah bagian ini di index.blade.php -->
+
+            <!-- Tombol Tambah Lead -->
             <a href="{{ route('leads.create') }}"
-                class="px-4 py-2 font-bold bg-[#93c5fd] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all inline-block">
-                + Tambah Lead
+                class="px-4 py-2 text-sm font-bold bg-[#93c5fd] text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center whitespace-nowrap">
+                + Tambah
             </a>
         </div>
-    </div>
+    </form>
 
     <!-- Table Container -->
     <div class="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-sm overflow-hidden">
