@@ -17,10 +17,7 @@ Route::middleware('guest')->group(function () {
 // Rute yang WAJIB login (Protected Routes)
 Route::middleware('auth')->group(function () {
 
-    // Rute Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard'); // Kita akan buat view ini nanti
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     // Rute CRUD Leads
     Route::resource('leads', App\Http\Controllers\LeadController::class);
