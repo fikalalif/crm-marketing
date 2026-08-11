@@ -7,9 +7,41 @@ use Illuminate\Http\Request;
 
 class LeadController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $leads = Lead::with('marketing')->latest()->paginate(10);
+        // Mulai query dengan relasi marketing
+        $query = Lead::with('marketing')->latest();
+
+        // 1. Fitur Search (Nama, Phone, Email, Company)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('company', 'like', "%{$search}%");
+            });
+        }
+
+        // 2. Fitur Filter Status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // 3. Fitur Filter Source
+        if ($request->filled('source')) {
+            $query->where('source', $request->source);
+        }
+
+        // 4. Fitur Filter Tanggal (berdasarkan tanggal dibuat)
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        // Eksekusi query dengan pagination (10 data per halaman)
+        // withQueryString() sangat penting agar filter tidak hilang saat pindah halaman
+        $leads = $query->paginate(10)->withQueryString();
+
         return view('leads.index', compact('leads'));
     }
 
