@@ -29,4 +29,17 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role', // Tambahkan ini
+    ];
+
+    // Tambahkan fungsi relasi ini di bagian bawah sebelum kurung tutup
+    public function leads()
+    {
+        return $this->hasMany(Lead::class, 'assigned_to');
+    }
 }
