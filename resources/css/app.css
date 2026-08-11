@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  /* Warna utama menyesuaikan referensi gambar */
+  --color-sidebar-bg: #1e293b; /* Dark Navy / Slate 800 */
+  --color-sidebar-text: #f8fafc;
+  --color-primary: #2563eb; /* Blue 600 untuk tombol utama */
+  --color-primary-hover: #1d4ed8;
+  --color-surface: #ffffff;
+  --color-background: #f1f5f9; /* Slate 100 untuk background luar tabel */
+}
+
+/* Tambahan animasi global untuk interaksi dasar */
+@layer utilities {
+  .btn-modern {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 ease-in-out hover:shadow-md active:scale-95;
+  }
+}
