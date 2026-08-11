@@ -17,15 +17,18 @@ Route::middleware('guest')->group(function () {
 // Rute yang WAJIB login (Protected Routes)
 Route::middleware('auth')->group(function () {
 
-    // Bisa diakses oleh Admin DAN Marketing
+    // Rute Dashboard
     Route::get('/dashboard', function () {
-        return 'Selamat datang, ' . auth()->user()->name . '! (Role: ' . auth()->user()->role . ') <br><br> <form action="/logout" method="POST">'.csrf_field().'<button type="submit">Logout</button></form>';
+        return view('dashboard'); // Kita akan buat view ini nanti
     })->name('dashboard');
+
+    // Rute CRUD Leads
+    Route::resource('leads', App\Http\Controllers\LeadController::class);
 
     // Khusus Admin Saja
     Route::middleware('role:admin')->group(function () {
         Route::get('/users', function () {
-            return '<h1>Halaman Manajemen User</h1><p>Hanya Admin yang bisa melihat halaman ini.</p> <br><a href="/dashboard">Kembali ke Dashboard</a>';
+            return 'Halaman Manajemen User';
         })->name('users.index');
     });
 
