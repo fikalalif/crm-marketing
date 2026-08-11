@@ -17,18 +17,30 @@
         </div>
 
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <!-- Menu Dashboard -->
             <a href="{{ route('dashboard') }}"
-                class="block px-4 py-2 font-semibold rounded-sm border-2 border-transparent hover:border-black hover:bg-slate-100 transition-all">Dashboard</a>
-            <a href="{{ route('leads.index') }}"
-                class="block px-4 py-2 font-semibold rounded-sm border-2 border-black bg-[#93c5fd] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all">Kelola
-                Leads</a>
-            <a href="#"
-                class="block px-4 py-2 font-semibold rounded-sm border-2 border-transparent hover:border-black hover:bg-slate-100 transition-all">Reports</a>
+                class="block px-4 py-2 font-semibold rounded-sm transition-all {{ request()->routeIs('dashboard') ? 'border-2 border-black bg-[#93c5fd] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-2 border-transparent hover:border-black hover:bg-slate-100' }}">
+                Dashboard
+            </a>
 
+            <!-- Menu Kelola Leads -->
+            <a href="{{ route('leads.index') }}"
+                class="block px-4 py-2 font-semibold rounded-sm transition-all {{ request()->routeIs('leads.*') ? 'border-2 border-black bg-[#93c5fd] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-2 border-transparent hover:border-black hover:bg-slate-100' }}">
+                Kelola Leads
+            </a>
+
+            <!-- Menu Reports -->
+            <a href="#"
+                class="block px-4 py-2 font-semibold rounded-sm transition-all {{ request()->routeIs('reports.*') ? 'border-2 border-black bg-[#93c5fd] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-2 border-transparent hover:border-black hover:bg-slate-100' }}">
+                Reports
+            </a>
+
+            <!-- Menu Users (Admin Only) -->
             @if (auth()->user()->role === 'admin')
                 <a href="{{ route('users.index') }}"
-                    class="block px-4 py-2 font-semibold rounded-sm border-2 border-transparent hover:border-black hover:bg-slate-100 transition-all">Users
-                    (Admin)</a>
+                    class="block px-4 py-2 font-semibold rounded-sm transition-all {{ request()->routeIs('users.*') ? 'border-2 border-black bg-[#93c5fd] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-2 border-transparent hover:border-black hover:bg-slate-100' }}">
+                    Users (Admin)
+                </a>
             @endif
         </nav>
 

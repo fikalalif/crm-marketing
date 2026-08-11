@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Lead;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LeadController extends Controller
 {
@@ -120,5 +121,41 @@ class LeadController extends Controller
         return redirect()->route('leads.index')->with('success', 'Data lead berhasil dihapus!');
     }
 
-    // ... biarkan fungsi edit, update, destroy kosong untuk sementara
+    // Tambahkan fungsi export ini
+    public function exportPdf(Request $request)
+    {
+        $query = Lead::with('marketing')->latest();
+
+        // Terapkan filter yang sama persis dengan fungsi index()
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('company', 'like', "%{$search}%");
+            });
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('source')) {
+            $query->where('source', $request->source);
+        }
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        // Ambil semua data yang sudah difilter (tanpa pagination)
+        $leads = $query->get();
+
+        // Load view PDF dan atur kertas menjadi A4 Landscape agar tabel muat
+        $pdf = Pdf::loadView('leads.pdf', compact('leads', 'request'))
+            ->setPaper('a4', 'landscape');
+
+        // Buat nama file dinamis
+        $fileName = 'Laporan-Leads-' . date('Y-m-d') . '.pdf';
+
+        return $pdf->download($fileName);
+    }
 }

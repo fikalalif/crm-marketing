@@ -19,6 +19,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
+    // Rute Khusus Export PDF (Harus di atas resource)
+    Route::get('/leads/export/pdf', [App\Http\Controllers\LeadController::class, 'exportPdf'])->name('leads.export.pdf');
+
+    // Rute CRUD Leads
+    Route::resource('leads', App\Http\Controllers\LeadController::class);
+
     // Rute CRUD Leads
     Route::resource('leads', App\Http\Controllers\LeadController::class);
 
