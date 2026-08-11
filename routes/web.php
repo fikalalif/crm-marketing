@@ -28,11 +28,9 @@ Route::middleware('auth')->group(function () {
     // Rute CRUD Leads
     Route::resource('leads', App\Http\Controllers\LeadController::class);
 
-    // Khusus Admin Saja
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/users', function () {
-            return 'Halaman Manajemen User';
-        })->name('users.index');
+    // Rute Khusus Admin untuk Kelola User Marketing
+    Route::middleware([\App\Http\Middleware\IsAdmin::class])->group(function () {
+        Route::resource('users', App\Http\Controllers\UserController::class);
     });
 
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
