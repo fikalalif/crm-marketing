@@ -16,10 +16,18 @@ Route::middleware('guest')->group(function () {
 
 // Rute yang WAJIB login (Protected Routes)
 Route::middleware('auth')->group(function () {
-    // Rute sementara untuk testing Dashboard
+
+    // Bisa diakses oleh Admin DAN Marketing
     Route::get('/dashboard', function () {
-        return 'Selamat datang, ' . auth()->user()->name . '! <br><br> <form action="/logout" method="POST">'.csrf_field().'<button type="submit">Logout</button></form>';
+        return 'Selamat datang, ' . auth()->user()->name . '! (Role: ' . auth()->user()->role . ') <br><br> <form action="/logout" method="POST">'.csrf_field().'<button type="submit">Logout</button></form>';
     })->name('dashboard');
 
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    // Khusus Admin Saja
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/users', function () {
+            return '<h1>Halaman Manajemen User</h1><p>Hanya Admin yang bisa melihat halaman ini.</p> <br><a href="/dashboard">Kembali ke Dashboard</a>';
+        })->name('users.index');
+    });
+
+    Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 });
