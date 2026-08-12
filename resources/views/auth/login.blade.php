@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Marketing CRM</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
 <body class="bg-slate-50 min-h-screen flex items-center justify-center font-sans text-black">
 
     <div class="bg-white p-8 w-full max-w-md border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-sm">
@@ -32,10 +34,20 @@
                     class="p-2 border-2 border-black focus:outline-none focus:bg-slate-100 transition-colors">
             </div>
 
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1" x-data="{ showPassword: false }">
                 <label for="password" class="font-bold text-sm">Password</label>
-                <input type="password" name="password" id="password" required
-                    class="p-2 border-2 border-black focus:outline-none focus:bg-slate-100 transition-colors">
+                <div class="flex">
+                    <!-- Input Field yang type-nya dinamis mengikuti state Alpine -->
+                    <input :type="showPassword ? 'text' : 'password'" name="password" id="password" required
+                        class="w-full p-2 border-2 border-black border-r-0 focus:outline-none focus:bg-slate-50 transition-colors">
+
+                    <!-- Tombol Toggle Show/Hide -->
+                    <button type="button" @click="showPassword = !showPassword"
+                        class="px-4 bg-[#d8b4fe] border-2 border-black font-bold text-xs hover:bg-[#fde047] transition-colors flex items-center justify-center shrink-0">
+                        <!-- Teks berubah otomatis -->
+                        <span x-text="showPassword ? 'Hide' : 'Show'"></span>
+                    </button>
+                </div>
             </div>
 
             <button type="submit"
@@ -46,4 +58,5 @@
     </div>
 
 </body>
+
 </html>
