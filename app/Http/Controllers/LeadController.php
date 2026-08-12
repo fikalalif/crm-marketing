@@ -145,6 +145,10 @@ class LeadController extends Controller
         if ($request->filled('date')) {
             $query->whereDate('created_at', $request->date);
         }
+        if ($request->filled('days')) {
+            $startDate = now()->subDays($request->days)->startOfDay();
+            $query->where('created_at', '>=', $startDate);
+        }
 
         // Ambil semua data yang sudah difilter (tanpa pagination)
         $leads = $query->get();

@@ -28,6 +28,9 @@ Route::middleware('auth')->group(function () {
     // Rute CRUD Leads
     Route::resource('leads', App\Http\Controllers\LeadController::class);
 
+    // Rute Laporan (Reports)
+    Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+
     // Rute Khusus Admin untuk Kelola User Marketing
     Route::middleware([\App\Http\Middleware\IsAdmin::class])->group(function () {
         Route::resource('users', App\Http\Controllers\UserController::class);

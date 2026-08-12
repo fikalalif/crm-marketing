@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Matikan dark mode bawaan sistem, paksa menggunakan class .dark */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Warna utama menyesuaikan referensi gambar */
   --color-sidebar-bg: #1e293b; /* Dark Navy / Slate 800 */
