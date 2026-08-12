@@ -38,13 +38,22 @@
                 class="p-2 border-2 border-black focus:outline-none focus:bg-slate-50 transition-colors">
         </div>
 
-        <!-- Password (Opsional) -->
-        <div class="flex flex-col gap-1">
-            <label for="password" class="font-bold text-sm">Password Baru <span class="text-slate-400 font-normal">(Opsional)</span></label>
-            <input type="password" name="password" id="password" minlength="8"
-                class="p-2 border-2 border-black focus:outline-none focus:bg-slate-50 transition-colors placeholder:text-sm"
-                placeholder="Kosongkan jika tidak ingin mengganti password">
-        </div>
+        <!-- Password -->
+            <div class="flex flex-col gap-1" x-data="{ showPassword: false }">
+                <label for="password" class="font-bold text-sm">Password</label>
+                <div class="flex">
+                    <!-- Input Field yang type-nya dinamis mengikuti state Alpine -->
+                    <input :type="showPassword ? 'text' : 'password'" name="password" id="password" required
+                        class="w-full p-2 border-2 border-black border-r-0 focus:outline-none focus:bg-slate-50 transition-colors">
+
+                    <!-- Tombol Toggle Show/Hide -->
+                    <button type="button" @click="showPassword = !showPassword"
+                        class="px-4 bg-[#d8b4fe] border-2 border-black font-bold text-xs hover:bg-[#fde047] transition-colors flex items-center justify-center shrink-0">
+                        <!-- Teks berubah otomatis -->
+                        <span x-text="showPassword ? 'Hide' : 'Show'"></span>
+                    </button>
+                </div>
+            </div>
 
         <!-- Role -->
         <div class="flex flex-col gap-1">

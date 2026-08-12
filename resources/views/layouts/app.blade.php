@@ -8,12 +8,32 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-slate-50 font-sans text-black antialiased flex h-screen overflow-hidden">
+<body x-data="{ sidebarOpen: false }" class="bg-slate-50 font-sans text-black antialiased flex h-screen overflow-hidden">
+
+    <!-- Overlay Backdrop -->
+    <div x-show="sidebarOpen" 
+         @click="sidebarOpen = false" 
+         x-transition:enter="transition-opacity ease-linear duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-linear duration-300"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black/50 z-40 md:hidden" 
+         style="display: none;">
+    </div>
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r-2 border-black flex flex-col h-full shrink-0">
-        <div class="h-16 flex items-center px-6 border-b-2 border-black">
+    <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
+           class="w-64 bg-white border-r-2 border-black flex flex-col h-full shrink-0 fixed inset-y-0 left-0 z-50 transform transition duration-200 ease-in-out md:relative md:translate-x-0">
+        <div class="h-16 flex items-center justify-between px-6 border-b-2 border-black shrink-0">
             <h1 class="font-bold text-xl tracking-tight">CRM<span class="text-blue-600">.</span>Internal</h1>
+            <!-- Close Sidebar Button (Mobile Only) -->
+            <button @click="sidebarOpen = false" class="md:hidden p-1 border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none bg-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
 
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
@@ -30,7 +50,7 @@
             </a>
 
             <!-- Menu Reports -->
-            <a href="#"
+            <a href="{{ route('reports.index') }}"
                 class="block px-4 py-2 font-semibold rounded-sm transition-all {{ request()->routeIs('reports.*') ? 'border-2 border-black bg-[#93c5fd] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-2 border-transparent hover:border-black hover:bg-slate-100' }}">
                 Reports
             </a>
@@ -44,7 +64,7 @@
             @endif
         </nav>
 
-        <div class="p-4 border-t-2 border-black">
+        <div class="p-4 border-t-2 border-black shrink-0">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit"
@@ -56,22 +76,33 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-full overflow-hidden">
+    <main class="flex-1 flex flex-col h-full overflow-hidden w-full">
         <!-- Topbar -->
-        <header class="h-16 bg-white border-b-2 border-black flex items-center justify-between px-8 shrink-0">
-            <h2 class="font-bold text-lg">@yield('header_title', 'Dashboard')</h2>
-            <div class="flex items-center gap-2">
-                <span class="text-sm font-semibold">{{ auth()->user()->name }}</span>
-                <span
-                    class="text-xs px-2 py-1 bg-slate-200 border border-black rounded-sm">{{ auth()->user()->role }}</span>
+        <header class="h-16 bg-white border-b-2 border-black flex items-center justify-between px-4 md:px-8 shrink-0">
+            <div class="flex items-center gap-3 md:gap-0">
+                <!-- Hamburger Menu Button -->
+                <button @click="sidebarOpen = !sidebarOpen" 
+                        class="md:hidden flex items-center justify-center p-2 border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-white hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                
+                <h2 class="font-bold text-lg md:text-xl truncate max-w-[150px] sm:max-w-xs md:max-w-none">
+                    @yield('header_title', 'Dashboard')
+                </h2>
+            </div>
+            
+            <div class="flex items-center gap-2 shrink-0">
+                <span class="text-sm font-semibold hidden sm:inline-block">{{ auth()->user()->name }}</span>
+                <span class="text-xs px-2 py-1 bg-slate-200 border border-black rounded-sm font-bold">{{ auth()->user()->role }}</span>
             </div>
         </header>
 
         <!-- Page Content -->
-        <div class="flex-1 overflow-y-auto p-8">
+        <div class="flex-1 overflow-y-auto p-4 md:p-8">
             @if (session('success'))
-                <div
-                    class="mb-6 bg-[#86efac] border-2 border-black p-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex justify-between items-center">
+                <div class="mb-6 bg-[#86efac] border-2 border-black p-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex justify-between items-center">
                     <span class="font-bold">{{ session('success') }}</span>
                 </div>
             @endif
