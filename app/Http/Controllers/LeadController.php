@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
+use App\Models\LeadStatus; // WAJIB TAMBAH INI UNTUK BOARD TRELLO
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -10,8 +11,11 @@ class LeadController extends Controller
 {
     public function index(Request $request)
     {
-        // Mulai query dengan relasi marketing
-        $query = Lead::with('marketing')->latest();
+        // Ambil data status untuk header board Trello
+        $statuses = LeadStatus::orderBy('order', 'asc')->get();
+
+        // Mulai query dengan relasi marketing DAN status (dinamis)
+        $query = Lead::with(['marketing', 'status'])->latest();
 
         // 1. Fitur Search (Nama, Phone, Email, Company)
         if ($request->filled('search')) {
@@ -24,9 +28,9 @@ class LeadController extends Controller
             });
         }
 
-        // 2. Fitur Filter Status
+        // 2. Fitur Filter Status (Dicocokkan dengan lead_status_id yang baru)
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where('lead_status_id', $request->status);
         }
 
         // 3. Fitur Filter Source
@@ -39,37 +43,42 @@ class LeadController extends Controller
             $query->whereDate('created_at', $request->date);
         }
 
-        // Eksekusi query dengan pagination (10 data per halaman)
-        // withQueryString() sangat penting agar filter tidak hilang saat pindah halaman
-        $leads = $query->paginate(10)->withQueryString();
+        // Eksekusi query TANPA pagination, lalu di-group berdasarkan status ID (Untuk tampilan Trello)
+        // Dibatasi 100 agar board tidak terlalu berat memuat data lama
+        $leads = $query->limit(100)->get()->groupBy('lead_status_id');
 
-        return view('leads.index', compact('leads'));
+        return view('leads.index', compact('leads', 'statuses'));
     }
 
     // Menampilkan form tambah lead
     public function create()
     {
-        return view('leads.create');
+        // Lempar data status ke form
+        $statuses = LeadStatus::orderBy('order', 'asc')->get();
+        return view('leads.create', compact('statuses'));
     }
 
     // Memproses penyimpanan data ke database
     public function store(Request $request)
     {
-        // 1. Validasi Backend sesuai dokumen brief
+        // 1. Validasi Backend sesuai dokumen brief (Disesuaikan untuk dynamic status & input tanggal)
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
             'company' => 'nullable|string|max:255',
-            'status' => 'required|in:cool,warm,hot,close',
+            'lead_status_id' => 'required|exists:lead_statuses,id',
             'source' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
+            'created_at' => 'required|date',
         ], [
             // Kustomisasi pesan error
             'name.required' => 'Nama customer wajib diisi.',
             'phone.required' => 'Nomor telepon wajib diisi.',
             'email.email' => 'Format email tidak valid.',
-            'status.required' => 'Status wajib dipilih.'
+            'lead_status_id.required' => 'Status wajib dipilih.',
+            'created_at.required' => 'Tanggal input wajib diisi.',
+            'created_at.date' => 'Format tanggal tidak valid.'
         ]);
 
         // 2. Set assigned_to otomatis ke user yang sedang login
@@ -85,26 +94,31 @@ class LeadController extends Controller
     // Menampilkan form edit lead
     public function edit(Lead $lead)
     {
-        return view('leads.edit', compact('lead'));
+        // Lempar data status ke form
+        $statuses = LeadStatus::orderBy('order', 'asc')->get();
+        return view('leads.edit', compact('lead', 'statuses'));
     }
 
     // Memproses update data ke database
     public function update(Request $request, Lead $lead)
     {
-        // Validasi data input
+        // Validasi data input (Disesuaikan untuk dynamic status & input tanggal)
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
             'company' => 'nullable|string|max:255',
-            'status' => 'required|in:cool,warm,hot,close',
+            'lead_status_id' => 'required|exists:lead_statuses,id',
             'source' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
+            'created_at' => 'required|date',
         ], [
             'name.required' => 'Nama customer wajib diisi.',
             'phone.required' => 'Nomor telepon wajib diisi.',
             'email.email' => 'Format email tidak valid.',
-            'status.required' => 'Status wajib dipilih.'
+            'lead_status_id.required' => 'Status wajib dipilih.',
+            'created_at.required' => 'Tanggal input wajib diisi.',
+            'created_at.date' => 'Format tanggal tidak valid.'
         ]);
 
         // Update data lead
@@ -121,10 +135,20 @@ class LeadController extends Controller
         return redirect()->route('leads.index')->with('success', 'Data lead berhasil dihapus!');
     }
 
-    // Tambahkan fungsi export ini
+    // API Endpoint khusus untuk Drag and Drop Trello Board
+    public function updateStatus(Request $request, Lead $lead)
+    {
+        $request->validate(['lead_status_id' => 'required|exists:lead_statuses,id']);
+        $lead->update(['lead_status_id' => $request->lead_status_id]);
+
+        return response()->json(['success' => true]);
+    }
+
+    // Tambahkan fungsi export ini (Tetap utuh dari kode asli)
     public function exportPdf(Request $request)
     {
-        $query = Lead::with('marketing')->latest();
+        // Tambahkan relasi status
+        $query = Lead::with(['marketing', 'status'])->latest();
 
         // Terapkan filter yang sama persis dengan fungsi index()
         if ($request->filled('search')) {
@@ -136,9 +160,12 @@ class LeadController extends Controller
                     ->orWhere('company', 'like', "%{$search}%");
             });
         }
+
+        // Sesuaikan dengan kolom status yang baru
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where('lead_status_id', $request->status);
         }
+
         if ($request->filled('source')) {
             $query->where('source', $request->source);
         }

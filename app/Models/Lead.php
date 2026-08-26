@@ -14,11 +14,18 @@ class Lead extends Model
         'phone',
         'email',
         'company',
+        'lead_status_id',
         'status',
         'source',
         'notes',
         'assigned_to',
+        'created_at',
     ];
+
+    public function status()
+    {
+        return $this->belongsTo(LeadStatus::class, 'lead_status_id');
+    }
 
     public function marketing()
     {
