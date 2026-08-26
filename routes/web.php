@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LeadStatusController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -24,9 +25,10 @@ Route::middleware('auth')->group(function () {
 
     // Rute CRUD Leads
     Route::resource('leads', App\Http\Controllers\LeadController::class);
+    Route::resource('statuses', LeadStatusController::class)->only(['index', 'store', 'destroy']);
 
     // Rute CRUD Leads
-    Route::resource('leads', App\Http\Controllers\LeadController::class);
+    Route::patch('/leads/{lead}/status', [App\Http\Controllers\LeadController::class, 'updateStatus'])->name('leads.update_status');
 
     // Rute Laporan (Reports)
     Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');

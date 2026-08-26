@@ -4,48 +4,43 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Lead;
+use App\Models\LeadStatus;
 use Faker\Factory as Faker;
 
 class LeadSeeder extends Seeder
 {
     public function run(): void
     {
-        // Menggunakan Faker dengan pengaturan bahasa Indonesia
         $faker = Faker::create('id_ID');
 
-        $statuses = ['cool', 'warm', 'hot', 'close'];
+        // Tarik semua ID status yang sudah dibuat LeadStatusSeeder
+        $statusIds = LeadStatus::pluck('id')->toArray();
         $sources = ['Google Ads', 'Meta Ads', 'Website', 'WhatsApp', 'Referral', 'Organic'];
 
-        // Beberapa catatan spesifik agar pencarian lebih bervariasi saat dites
         $customNotes = [
             'Tanya spesifikasi wire strainer untuk Honda Vario 150.',
-            'Mencari stok kamera digital vintage Kodak dan Canon.',
+            'Mencari stok kamera digital vintage Canon IXUS dan Kodak.',
             'Berminat dengan aplikasi berpalet warna Y2K yang manly but bright.',
-            'Order partai besar untuk acara makan Bakso dan Mie Aceh di Tegal.',
-            'Butuh sparepart aksesoris untuk Yamaha Fazzio.',
-            'Tanya ketersediaan lensa untuk Olympus dan Lumix.',
-            'Tertarik kerja sama pengembangan aplikasi AI menggunakan FastAPI.',
+            'Order partai besar untuk pengiriman ke area Lebaksiu, Tegal.',
+            'Tertarik kerja sama pengembangan web menggunakan Laravel dan Astro.',
+            'Tanya ketersediaan paket hosting untuk deployment di Hostinger.',
             'Klien mencari solusi identifikasi elemen geologi organik yang simpel.',
+            'Konsultasi untuk perbaikan error lensa pada kamera Nikon Coolpix.',
             'Minta di-follow up via WhatsApp minggu depan.',
-            'Tanya ketersediaan suku cadang dari supplier internasional.',
-            'Konsultasi untuk perbaikan error lensa kamera Casio.'
+            'Tanya ketersediaan suku cadang dari supplier internasional.'
         ];
 
-        // Looping untuk membuat 35 data lead dummy
         for ($i = 0; $i < 35; $i++) {
             Lead::create([
                 'name' => $faker->name,
                 'phone' => $faker->phoneNumber,
                 'email' => $faker->unique()->safeEmail,
                 'company' => $faker->company,
-                'status' => $faker->randomElement($statuses),
+                // Menggunakan lead_status_id, bukan text status
+                'lead_status_id' => $faker->randomElement($statusIds),
                 'source' => $faker->randomElement($sources),
                 'notes' => $faker->randomElement($customNotes),
-
-                // Set ID 2 (Akun Marketing yang dibuat di UserSeeder sebelumnya)
-                'assigned_to' => 2,
-
-                // Acak tanggal pembuatan dari 3 bulan lalu hingga hari ini
+                'assigned_to' => 2, // ID Akun Marketing
                 'created_at' => $faker->dateTimeBetween('-3 months', 'now'),
             ]);
         }
