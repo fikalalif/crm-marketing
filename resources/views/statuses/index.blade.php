@@ -35,11 +35,39 @@
                                 class="p-2 border-2 border-black dark:border-white focus:outline-none focus:bg-white dark:focus:bg-slate-600 bg-slate-50 dark:bg-slate-700 text-black dark:text-white">
                         </div>
 
-                        <div class="flex flex-col gap-1">
+                        <!-- Input Urutan dengan Alpine.js -->
+                        <div class="flex flex-col gap-1" x-data="{ order: 1 }">
                             <label class="font-bold text-sm">Urutan (Angka) <span
                                     class="text-red-600 dark:text-[#fca5a5]">*</span></label>
-                            <input type="number" name="order" value="1" required
-                                class="p-2 border-2 border-black dark:border-white focus:outline-none focus:bg-white dark:focus:bg-slate-600 bg-slate-50 dark:bg-slate-700 text-black dark:text-white">
+                            <div class="flex gap-2">
+                                <!-- Tombol Decrement (-) -->
+                                <button type="button" @click="if(order > 1) order--"
+                                    class="px-4 py-2 bg-[#fca5a5] border-2 border-black dark:border-white font-black text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-none transition-all">
+                                    -
+                                </button>
+
+                                <!-- Input Field -->
+                                <input type="number" name="order" x-model="order" min="1" required
+                                    class="w-full text-center p-2 border-2 border-black dark:border-white focus:outline-none focus:bg-white dark:focus:bg-slate-600 bg-slate-50 dark:bg-slate-700 text-black dark:text-white">
+
+                                <!-- Tombol Increment (+) -->
+                                <button type="button" @click="order++"
+                                    class="px-4 py-2 bg-[#86efac] border-2 border-black dark:border-white font-black text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-none transition-all">
+                                    +
+                                </button>
+                            </div>
+                            <style>
+                                /* Menyembunyikan panah default bawaan browser pada input type number */
+                                input[type=number]::-webkit-inner-spin-button,
+                                input[type=number]::-webkit-outer-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                }
+
+                                input[type=number] {
+                                    -moz-appearance: textfield;
+                                }
+                            </style>
                         </div>
 
                         <div class="flex flex-col gap-1">

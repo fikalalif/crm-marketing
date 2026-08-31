@@ -19,11 +19,14 @@ class LeadStatusController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'color' => 'required|string|max:50',
-            'order' => 'required|integer',
+            // Tambahkan aturan unique dan min:1 di sini
+            'order' => 'required|integer|min:1|unique:lead_statuses,order',
         ], [
             'name.required' => 'Nama status wajib diisi.',
             'color.required' => 'Warna kolom wajib dipilih.',
-            'order.required' => 'Urutan wajib diisi.'
+            'order.required' => 'Urutan wajib diisi.',
+            'order.min' => 'Angka urutan tidak boleh kurang dari 1.',
+            'order.unique' => 'Angka urutan ini sudah dipakai. Silakan pilih angka urutan yang lain.'
         ]);
 
         LeadStatus::create($validated);
