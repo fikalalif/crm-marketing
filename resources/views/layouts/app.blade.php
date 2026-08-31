@@ -9,7 +9,8 @@
     <!-- SCRIPT ANTI-KEDIP (FOUC) -->
     <!-- Dieksekusi paling awal untuk mencegah layar berkedip putih saat di-refresh -->
     <script>
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia(
+                '(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
@@ -20,27 +21,26 @@
 </head>
 
 <body x-data="{
-        sidebarOpen: false,
-        darkMode: document.documentElement.classList.contains('dark'),
-        toggleTheme() {
-            this.darkMode = !this.darkMode;
-            if (this.darkMode) {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            }
+    sidebarOpen: false,
+    darkMode: document.documentElement.classList.contains('dark'),
+    toggleTheme() {
+        this.darkMode = !this.darkMode;
+        if (this.darkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
         }
-    }"
+    }
+}"
     class="bg-slate-50 dark:bg-slate-900 font-sans text-black dark:text-slate-100 antialiased flex h-screen overflow-hidden transition-colors duration-300">
 
     <!-- Overlay Backdrop -->
-    <div x-show="sidebarOpen" @click="sidebarOpen = false"
-        x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300"
-        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-        class="fixed inset-0 bg-black/50 z-40 md:hidden" style="display: none;">
+    <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition:enter="transition-opacity ease-linear duration-300"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black/50 z-40 md:hidden" style="display: none;">
     </div>
 
     <!-- Sidebar -->
@@ -72,6 +72,10 @@
                 Kelola Leads
             </a>
 
+            <a href="{{ route('statuses.index') }}"
+                class="block p-3 font-bold border-b-2 border-black dark:border-white hover:bg-[#86efac] dark:hover:bg-[#86efac] dark:hover:text-black transition-colors {{ request()->routeIs('statuses.*') ? 'bg-[#86efac] text-black' : 'text-slate-700 dark:text-slate-300' }}">
+                Atur Papan (Status)
+            </a>
             <!-- Menu Reports -->
             <a href="{{ route('reports.index') }}"
                 class="block px-4 py-2 font-semibold rounded-sm transition-all {{ request()->routeIs('reports.*') ? 'border-2 border-black dark:border-white bg-[#93c5fd] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]' : 'border-2 border-transparent hover:border-black dark:hover:border-white hover:bg-slate-100 dark:hover:bg-slate-700' }}">
