@@ -21,7 +21,7 @@
 }" :class="{ 'dark': darkMode }"
     class="bg-slate-50 dark:bg-slate-900 text-black dark:text-white transition-colors duration-300 antialiased overflow-hidden">
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex inset-0 flex h-[100dvh] w-full overflow-hidden">
 
         <!-- Backdrop Blur (Hanya muncul di Mobile saat Sidebar Terbuka) -->
         <div x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"
@@ -77,7 +77,7 @@
         </aside>
 
         <!-- MAIN CONTENT AREA -->
-        <div class="flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300 ease-in-out"
+        <div class="flex-1 flex flex-col h-full overflow-hidden transition-all duration-300 ease-in-out"
             :class="sidebarOpen ? 'lg:ml-64' : 'ml-0'">
 
             <!-- TOPBAR -->
