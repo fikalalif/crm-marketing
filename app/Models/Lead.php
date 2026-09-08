@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Lead extends Model
 {
@@ -22,12 +23,12 @@ class Lead extends Model
         'created_at',
     ];
 
-    public function status()
+    public function status(): BelongsTo
     {
         return $this->belongsTo(LeadStatus::class, 'lead_status_id');
     }
 
-    public function marketing()
+    public function marketing(): BelongsTo
     {
         // Relasi kembali ke User
         return $this->belongsTo(User::class, 'assigned_to');
